@@ -19,3 +19,6 @@ Windows operating systems:
 ```
 python main.py {filename} {name-of-compiled-file: output is recommended} {compile-mode: com to compile normally and comr to compile and run}
 ```
+
+# How do I use Vielin?
+I tried to specify as much as I could in the **examples folder**, will write a documentation soon!
