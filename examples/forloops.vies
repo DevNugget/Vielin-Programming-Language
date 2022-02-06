@@ -1,0 +1,5 @@
+per words ["Hello","World!"] end
+
+for "i in words" do
+. push i end
+endloop

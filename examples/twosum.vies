@@ -1,0 +1,12 @@
+per testArray [9,15,3,7] end
+per K 17 end
+
+proc twoSums hop op [I,] def
+args arr:array[I,int],K:int -- bool in
+. for "loc_1,i in" hop op arr.pairs do
+. . for "loc_2,j in" hop op arr.pairs do
+. . . if "i + j == K and loc_1 != loc_2" then
+. . . . throw true end
+. throw false end
+
+push callproc twoSums testArray,K end 

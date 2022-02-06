@@ -1,0 +1,14 @@
+obj num 10 end
+per perNum 10 end
+const NUM 10 end
+
+obj as int num1 10 end
+per as int perNum1 10 end
+const as int NUM1 10 end
+
+push num end
+push num1 end
+push perNum end
+push perNum1 end
+push NUM end
+push NUM1 end
