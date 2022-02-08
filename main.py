@@ -41,7 +41,7 @@ for i in splitstack:
     bel = ""
     rem = i.split("\n")
     stack.extend(rem)
-        
+
     counti += 1
 
 countd = 0
@@ -76,19 +76,22 @@ for i in stack:
         else:
             output += "echo "
 
-    # End line and Create new line        
+    # End line and Create new line
     elif i == "end":
         output += "\n"
 
     # Function declaring
     elif i == "proc":
-        output += "proc " + stack[counter+1]
-        
-    # Function arguements        
+        if stack[counter+1] not in ignores:
+            output += "proc " + stack[counter+1]
+        else:
+            output += "proc "
+
+    # Function arguements
     elif i == "args":
         output += stack[counter+1] + ")"
 
-    # Function body declaration   
+    # Function body declaration
     elif i == "in":
         output += " = \n"
 
@@ -96,7 +99,7 @@ for i in stack:
     elif i == "--":
         output += ": " + stack[counter+1]
 
-    # Function opening    
+    # Function opening
     elif i == "def":
         output += "("
 
@@ -106,11 +109,16 @@ for i in stack:
 
     # Function calling
     elif i == "callproc":
-        output += stack[counter+1] + "(" + stack[counter+2] + ")"
-
+        if stack[counter+1] not in ignores:
+            if stack[counter+2] not in ignores:
+                output += stack[counter+1] + "(" + stack[counter+2] + ")"
+            elif stack[counter+2] == "callproc":
+                stack.pop(counter+2)
+                output += stack[counter+1] + "(" + stack[counter+2] + "(" + stack[counter+3] + "))"
+            
     # For loops
     elif i == "for":
-        if stack[counter+1] != "op" or stack[counter+1] != "hop": 
+        if stack[counter+1] != "op" or stack[counter+1] != "hop":
             ins = convertstr(stack[counter+1])
             ins.pop(0)
             ins.pop(-1)
@@ -119,11 +127,11 @@ for i in stack:
                 reg += i
             output += "for " + reg
         elif stack[counter+1] == "op" or stack[counter+1] != "hop":
-            output += "for " 
+            output += "for "
 
     # If statements
     elif i == "if":
-        if stack[counter+1] != "op" or stack[counter+1] != "hop" or stack[counter+1] != "chop": 
+        if stack[counter+1] not in ignores:
             ins = convertstr(stack[counter+1])
             ins.pop(0)
             ins.pop(-1)
@@ -132,11 +140,11 @@ for i in stack:
                 reg += i
             output += "if " + reg
         else:
-            output += "if " 
+            output += "if "
 
     # Elif statements
     elif i == "elif":
-        if stack[counter+1] != "op" or stack[counter+1] != "hop": 
+        if stack[counter+1] not in ignores:
             ins = convertstr(stack[counter+1])
             ins.pop(0)
             ins.pop(-1)
@@ -144,8 +152,8 @@ for i in stack:
             for i in ins:
                 reg += i
             output += "elif " + reg
-        elif stack[counter+1] == "op" or stack[counter+1] != "hop":
-            output += "elif " 
+        else:
+            output += "elif "
 
     # Else cases
     elif i == "else":
@@ -159,9 +167,12 @@ for i in stack:
     elif i == "then":
         output += ":\n"
 
+    elif i == "dump":
+        output += "discard "
+
     # While loops
     elif i == "during":
-        if stack[counter+1] != "op" or stack[counter+1] != "hop": 
+        if stack[counter+1] not in ignores:
             ins = convertstr(stack[counter+1])
             ins.pop(0)
             ins.pop(-1)
@@ -170,17 +181,17 @@ for i in stack:
                 reg += i
             output += "while " + reg
         elif stack[counter+1] == "op" or stack[counter+1] != "hop":
-            output += "while " 
+            output += "while "
 
-    # Super push               
+    # Super push
     elif i == "op":
         output += stack[counter+1]
 
     # Super space
     elif i == "hop":
-        output += " " 
+        output += " "
 
-    # Returning values    
+    # Returning values
     elif i == "throw":
         output += "return " + stack[counter+1]
 
@@ -192,7 +203,7 @@ for i in stack:
         else:
             output += "let " + stack[counter+1] + " = "
 
-    # Standard variables        
+    # Standard variables
     elif i == "obj":
         if stack[counter+2] != "$" and stack[counter+2] != "callproc" and stack[counter+1] != "as":
             output += "var " + stack[counter+1] + " = " + stack[counter+2]
@@ -201,7 +212,7 @@ for i in stack:
         else:
             output += "var " + stack[counter+1] + " = "
 
-    # Constant containers        
+    # Constant containers
     elif i == "const":
         if stack[counter+2] != "$" and stack[counter+2] != "callproc" and stack[counter+1] != "as":
             output += "const " + stack[counter+1] + " = " + stack[counter+2]
@@ -210,16 +221,33 @@ for i in stack:
         else:
             output += "const " + stack[counter+1] + " = "
 
-    # Setting references        
+    # Setting references
     elif i == "ref":
         if stack[counter+2] != "$" and stack[counter+2] != "callproc":
-            output += stack[counter+1] + " = " + stack[counter+2]   
+            output += stack[counter+1] + " = " + stack[counter+2]
         elif stack[counter+2] == "callproc":
             output += stack[counter+1] + " = "
 
     # Super pop char
     elif i == "chop":
-        output -= " "    
+        output -= " "
+
+    elif i == "use":
+        if stack[counter+1] not in ignores:
+            output += "import " + stack[counter+1]
+        else:
+            output += "import "
+
+    elif i == "#":
+        if stack[counter+1] not in ignores:
+            output += stack[counter+1]
+            for i in stack[counter+2:]:
+                if i == "end":
+                    break
+                else:
+                    output += "." + i
+                
+        
     counter += 1
 
 fw = open(sys.argv[2] + ".nim", "w")
