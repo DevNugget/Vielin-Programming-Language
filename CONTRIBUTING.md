@@ -1,7 +1,7 @@
 # Contributing to Vielin
 
 ## General rules and regulations
-**Please do not over-complicate how the translator (main.py) works.**
+- **Please do not over-complicate how the translator (main.py) works.**
 - The reason why the translator is written in the way it is right now is due to my small brain, and I wanted to make this project personally enjoyable to work on. So please keep the logic behind the translator the same.
 - Obviously use common sense and don't mess anything up.
 
