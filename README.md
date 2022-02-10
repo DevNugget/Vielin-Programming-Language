@@ -3,6 +3,7 @@
 # Vielin Programming Language
 A passion project, to try and make a set of syntax fun to use.  
 **[WARNING] This language is still under development, and may not be suitable for serious work.**
+Vielin translates to Nim and then compiled.
 
 # Requirements
 - A C compiler (gcc or clang)
