@@ -1,7 +1,1 @@
-com "Printing"
-
-push "Hello World!" end 
-
-com "Forcing final statement to output"
-
-op echo hop op "Hello World!" end
+push "Hello World" end
