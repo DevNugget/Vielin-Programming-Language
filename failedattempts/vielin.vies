@@ -1,0 +1,240 @@
+vielin { gc: orc }
+
+use std/os end
+use parseutils end
+use strutils end
+use sequtils end
+
+per stackBytesString callproc paramStr 2 end
+per stackBytes callproc parseInt stackBytesString end
+
+per clearCmd "clear" end
+dump callproc execShellCmd clearCmd end
+
+per sourceContent callproc readFile callproc paramStr 1 end
+
+proc splitArgs def
+args arg:string -- seq[string] in
+. op var end
+. . op parsed,tmp:string end
+. . op i,quotes:int end
+. op while hop op i<arg.len do
+. . op i+= # arg parseUntil(parsed,Whitespace,i)+1 end
+. . # tmp add(parsed) end
+. . if op parsed op .startsWith('"') then
+. . . # quotes inc end
+. . if op parsed op .endsWith('"') then
+. . . # quotes dec end
+. . elif op quotes>0 then
+. . . # tmp add(" ") end
+
+. . elif op quotes>0 then
+. . . # tmp add(" ") end
+
+. . if op quotes hop op == hop op 0 then
+. . . //# tmp removePrefix('"') end
+. . . //# tmp removeSuffix('"') end
+. . . # result add(tmp) end
+. . . ref tmp "" end
+
+. if op tmp.len>0 then
+. . # result add(tmp[1..^2]) end
+
+obj splitStack callproc splitArgs sourceContent end
+
+push splitStack end
+
+obj stack newSeq[string](stackBytes) end
+
+for op i hop op in hop op splitStack do
+. obj rem i.split("\n") end
+. push rem end
+. # stack add(rem) end
+
+obj keywordBytes 0 end
+obj output "" end
+
+obj as int counter 0 end
+obj ignores @["op","hop","chop","callproc"] end
+
+const ECHO "echo " end
+
+for op i hop op in hop op stack do
+. if op i hop op == hop op "push" then
+. . if op stack[counter+1] hop op in hop op ignores then
+. . . # output add(ECHO) end
+. . else do
+. . . # output add(ECHO) end
+. . . # output add(stack[counter+1]) end
+
+. elif op i hop op == hop  op "use" then
+. . # output add("import ") end
+. . # output add(stack[counter+1]) end
+
+. elif op i hop op == hop op "end" then
+. . # output add("\n") end
+
+. elif op i hop op == hop op "proc" then
+. . if op stack[counter+1] hop op in hop op ignores then
+. . . # output add("proc ") end
+. . else do
+. . . # output add("proc ") end
+. . . # output add(stack[counter+1]) end
+
+. elif op i hop op == hop op "args" then
+. . # output add(stack[counter+1]) end
+. . # output add(")") end
+
+. elif op i hop op == hop op "in" then
+. . if op stack[counter-1] hop op != hop op "op" then
+. . . # output add(" = \n") end
+
+. elif op i hop op == hop op "--" then
+. . # output add(": ") end
+. . # output add(stack[counter+1]) end
+
+. elif op i hop op == hop op "def" then
+. . # output add("(") end
+
+. elif op i hop op == hop op "." then
+. . # output add("    ") end
+
+. elif op i hop op == hop op "callproc" then
+. . if op stack[counter+1] hop op in hop op ignores then
+. . . dump end
+. . else do
+. . . if op stack[counter+2] hop op in hop op ignores then
+. . . . dump end
+. . . elif op stack[counter+2] hop op == hop op "callproc" then
+. . . . # stack delete(counter+2) end
+. . . . # output add(stack[counter+1]) end
+. . . . # output add("(") end
+. . . . # output add(stack[counter+2]) end
+. . . . # output add("(") end
+. . . . # output add(stack[counter+3]) end
+. . . . # output add("))") end
+. . . else do
+. . . . # output add(stack[counter+1]) end
+. . . . # output add("(") end
+. . . . # output add(stack[counter+2]) end
+. . . . # output add(")") end
+
+
+. elif op i hop op == hop op "for" then
+. . if op stack[counter+1] hop op in hop op ignores then
+. . . # output add("for ") end
+. . else do
+. . . # output add("for ") end
+. . . # output add(stack[counter+1]) end
+
+. elif op i hop op == hop op "if" then
+. . if op stack[counter+1] hop op in hop op ignores then
+. . . # output add("if ") end
+. . else do
+. . . # output add("if ") end
+. . . # output add(stack[counter+1]) end
+
+. elif op i hop op == hop op "elif" then
+. . if op stack[counter+1] hop op in hop op ignores then
+. . . # output add("elif ") end
+. . else do
+. . . # output add("elif ") end
+. . . # output add(stack[counter+1]) end
+
+. elif op i hop op == hop op "else" then
+. . # output add("else") end
+
+. elif op i hop op == hop op "do" then
+. . # output add(":\n") end
+
+. elif op i hop op == hop op "then" then
+. . # output add(":\n") end
+
+. elif op i hop op == hop op "dump" then
+. . # output add("discard ") end
+
+. elif op i hop op == hop op "during" then
+. . if op stack[counter+1] hop op in hop op ignores then
+. . . # output add("while ") end
+. . else do
+. . . # output add("while ") end
+. . . # output add(stack[counter+1]) end
+
+. elif op i hop op == hop op "op" then
+. . # output add(stack[counter+1]) end
+
+. elif op i hop op == hop op "hop" then
+. . # output add(" ") end
+
+. elif op i hop op == hop op "throw" then
+. . # output add("return ") end
+. . # output add(stack[counter+1]) end
+
+. elif op i hop op == hop op "obj" then
+. . if op stack[counter+2] hop op in hop op ignores then
+. . . # output add("var ") end
+. . . # output add(stack[counter+1]) end
+. . . # output add(" = ") end
+. . elif op stack[counter+1] hop op == hop op "as" then
+. . . # output add("var ") end
+. . . # output add(stack[counter+3]) end
+. . . # output add(": ") end
+. . . # output add(stack[counter+2]) end
+. . . # output add(" = ") end
+. . . # output add(stack[counter+4]) end
+. . else do
+. . . # output add("var ") end
+. . . # output add(stack[counter+1]) end
+. . . # output add(" = ") end
+. . . # output add(stack[counter+2]) end
+
+. elif op i hop op == hop op "per" then
+. . if op stack[counter+2] hop op in hop op ignores then
+. . . # output add("let ") end
+. . . # output add(stack[counter+1]) end
+. . . # output add(" = ") end
+. . elif op stack[counter+1] hop op == hop op "as" then
+. . . # output add("let ") end
+. . . # output add(stack[counter+3]) end
+. . . # output add(": ") end
+. . . # output add(stack[counter+2]) end
+. . . # output add(" = ") end
+. . . # output add(stack[counter+4]) end
+. . else do
+. . . # output add("let ") end
+. . . # output add(stack[counter+1]) end
+. . . # output add(" = ") end
+. . . # output add(stack[counter+2]) end
+
+. elif op i hop op == hop op "const" then
+. . if op stack[counter+2] hop op in hop op ignores then
+. . . # output add("const") end
+. . . # output add(stack[counter+1]) end
+. . . # output add(" = ") end
+. . elif op stack[counter+1] hop op == hop op "as" then
+. . . # output add("const ") end
+. . . # output add(stack[counter+3]) end
+. . . # output add(": ") end
+. . . # output add(stack[counter+2]) end
+. . . # output add(" = ") end
+. . . # output add(stack[counter+4]) end
+. . else do
+. . . # output add("const ") end
+. . . # output add(stack[counter+1]) end
+. . . # output add(" = ") end
+. . . # output add(stack[counter+2]) end
+
+. elif op i hop op == hop op "#" then
+. . if op stack[counter+1] hop op in hop op ignores then
+. . . dump end
+. . else do
+. . . # output add(stack[counter+1]) end
+. . . # output add(".") end
+. . . # output add(stack[counter+2]) end
+
+. op counter hop op += hop op 1 end
+
+op writeFile(paramStr(3),output) end
+
+
+
