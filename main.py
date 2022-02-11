@@ -1,9 +1,10 @@
 from compileall import compile_file
+from curses import can_change_color
 import os
-import compiler
+import re
 import sys
 
-cls_com = "clear"
+cls_com = "clea"
 os.system(cls_com)
 
 def convertstr(string):
@@ -36,13 +37,29 @@ splitstack = [''.join(x) for x in results]
 counti = 0
 
 stack = []
+tabstack = []
+finalstack = []
 
 for i in splitstack:
     bel = ""
     rem = i.split("\n")
-    stack.extend(rem)
+    tabstack.extend(rem)
 
     counti += 1
+
+tabcounti = 0
+charcount = 0
+
+print(tabstack)
+
+for i in range(len(tabstack)):
+    if tabstack[i].startswith("\t"):
+        for c in range(len(tabstack[i])):
+            if tabstack[i][c] == "\t": finalstack.append("\t")
+        finalstack.append(tabstack[i].replace("\t", ""))
+    else: finalstack.append(tabstack[i])
+
+stack = finalstack
 
 countd = 0
 remflit = 0
@@ -62,7 +79,9 @@ ignores = [
     "op",
     "hop",
     "chop",
-    "callproc"
+    "callproc",
+    "ncallproc",
+    "#",
 ]
 
 print(stack)
@@ -91,9 +110,16 @@ for i in stack:
     elif i == "args":
         output += stack[counter+1] + ")"
 
+    elif i == "nargs":
+        output += ")"
+
+    elif i == "pragma":
+        output += "{." + stack[counter+1] + ".}"
+
     # Function body declaration
     elif i == "in":
-        output += " = \n"
+        if stack[counter-1] != "op":
+            output += " = \n"
 
     # Function return type declaration
     elif i == "--":
@@ -104,8 +130,11 @@ for i in stack:
         output += "("
 
     # Tab notation
-    elif i == ".":
-        output += "    "
+    elif i == "\t":
+        if stack[counter-1] == "then":
+            output += "    "
+        else:
+            output += "    "
 
     # Function calling
     elif i == "callproc":
@@ -115,10 +144,21 @@ for i in stack:
             elif stack[counter+2] == "callproc":
                 stack.pop(counter+2)
                 output += stack[counter+1] + "(" + stack[counter+2] + "(" + stack[counter+3] + "))"
-            
+
+    elif i == "ncallproc":
+        if stack[counter+1] not in ignores:
+            if stack[counter+2] not in ignores:
+                output += stack[counter+1] + "()"
+            elif stack[counter+2] == "callproc":
+                stack.pop(counter+2)
+                output += stack[counter+1] + "(" + stack[counter+2] + "(" + stack[counter+3] + "))"
+            elif stack[counter+2] == "ncallproc":
+                stack.pop(counter+2)
+                output += stack[counter+1] + "(" + stack[counter+2] + "())"
+
     # For loops
     elif i == "for":
-        if stack[counter+1] != "op" or stack[counter+1] != "hop":
+        if stack[counter+1] not in ignores:
             ins = convertstr(stack[counter+1])
             ins.pop(0)
             ins.pop(-1)
@@ -126,8 +166,14 @@ for i in stack:
             for i in ins:
                 reg += i
             output += "for " + reg
-        elif stack[counter+1] == "op" or stack[counter+1] != "hop":
+        else:
             output += "for "
+
+    elif i == "case":
+        output += "case " + stack[counter+1] + "\n"
+
+    elif i == "of":
+        output += "of " + stack[counter+1]
 
     # If statements
     elif i == "if":
@@ -165,7 +211,10 @@ for i in stack:
 
     # If statement matched
     elif i == "then":
-        output += ":\n"
+        if stack[counter-2] == "of":
+            output += ": "
+        else:
+            output += ":\n"
 
     elif i == "dump":
         output += "discard "
@@ -180,7 +229,7 @@ for i in stack:
             for i in ins:
                 reg += i
             output += "while " + reg
-        elif stack[counter+1] == "op" or stack[counter+1] != "hop":
+        else:
             output += "while "
 
     # Super push
@@ -196,7 +245,7 @@ for i in stack:
         output += "return " + stack[counter+1]
 
     elif i == "per":
-        if stack[counter+2] != "$" and stack[counter+2] != "callproc" and stack[counter+1] != "as":
+        if stack[counter+2] not in ignores:
             output += "let " + stack[counter+1] + " = " + stack[counter+2]
         elif stack[counter+1] == "as":
             output += "let " + stack[counter+3] + ": " + stack[counter+2] + " = " + stack[counter+4]
@@ -205,7 +254,7 @@ for i in stack:
 
     # Standard variables
     elif i == "obj":
-        if stack[counter+2] != "$" and stack[counter+2] != "callproc" and stack[counter+1] != "as":
+        if stack[counter+2] not in ignores:
             output += "var " + stack[counter+1] + " = " + stack[counter+2]
         elif stack[counter+1] == "as":
             output += "var " + stack[counter+3] + ": " + stack[counter+2] + " = " + stack[counter+4]
@@ -214,7 +263,7 @@ for i in stack:
 
     # Constant containers
     elif i == "const":
-        if stack[counter+2] != "$" and stack[counter+2] != "callproc" and stack[counter+1] != "as":
+        if stack[counter+2] not in ignores:
             output += "const " + stack[counter+1] + " = " + stack[counter+2]
         elif stack[counter+1] == "as":
             output += "const " + stack[counter+3] + ": " + stack[counter+2] + " = " + stack[counter+4]
@@ -223,7 +272,7 @@ for i in stack:
 
     # Setting references
     elif i == "ref":
-        if stack[counter+2] != "$" and stack[counter+2] != "callproc":
+        if stack[counter+2] not in ignores:
             output += stack[counter+1] + " = " + stack[counter+2]
         elif stack[counter+2] == "callproc":
             output += stack[counter+1] + " = "

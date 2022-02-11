@@ -1,0 +1,17 @@
+use asynchttpserver end
+use asyncdispatch end
+
+push "visit: http://localhost:5555" end
+
+proc main def nargs pragma async in
+	obj server newAsyncHttpServer() end
+	proc cb def args req:Request pragma async in
+		per headers {"Date":"Tue, 29 Apr 2014 23:40:08 GMT","Content-type":"text/plain; charset=utf-8"} end
+		op await hop # req respond(Http200,"Hello World, This is a webserver made in Vielin",headers.newHttpHeaders()) end
+endproc  
+	op await  hop # server.serve(Port(5555),cb) end
+
+op asyncCheck hop ncallproc main end
+ncallproc runForever end
+
+
