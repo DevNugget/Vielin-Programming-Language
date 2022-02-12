@@ -1,5 +1,5 @@
 per words ["Hello","World!"] end
 
 for "i in words" do
-. push i end
+	push i end
 endloop

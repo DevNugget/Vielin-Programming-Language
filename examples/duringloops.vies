@@ -1,7 +1,6 @@
 obj num 0 end
 
 during "num < 10" do
-. push "number is: "+str(num) end
-. op num+=1
+	push "number is: "+str(num) end
+	op num+=1 end
 endloop
-

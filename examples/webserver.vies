@@ -2,7 +2,7 @@ use asynchttpserver end
 use asyncdispatch end
 
 push "visit: http://localhost:5555" end
-
+push "Hello World" end
 proc main def nargs pragma async in
 	obj server newAsyncHttpServer() end
 	proc cb def args req:Request pragma async in
@@ -13,5 +13,3 @@ endproc
 
 op asyncCheck hop ncallproc main end
 ncallproc runForever end
-
-

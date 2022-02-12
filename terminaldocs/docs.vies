@@ -1,62 +1,74 @@
+vielin { gc: orc }
+
 use illwill end
 use os end
 
 obj upperBound 2 end
 obj lowerBound 0 end
 obj choice 0 end
+obj page 1 end
 
-proc exitProc def
-args  op {.noconv.} in
-. callproc illwillDeinit  end
-. callproc showCursor  end
-. callproc quit 0 end
+//Exit Function//
+proc exitProc def nargs
+pragma noconv in
+	ncallproc illwillDeinit end
+	ncallproc showCursor end
+	callproc quit 0 end
 endproc
 
-proc incChoice def
-args  in
-. if "choice < upperBound" then
-. . op choice hop op += hop op 1 end
+//Choice Shifter +//
+proc incChoice def nargs in
+	if "choice < upperBound" then
+		op choice hop op += hop op 1 end
 endproc
 
-proc decChoice def
-args  in
-. if "choice > lowerBound" then
-. . op choice hop op -= hop op 1 end
+//Choice Shifter -//
+proc decChoice def nargs in
+	if "choice > lowerBound" then
+		op choice hop op -= hop op 1 end
 endproc
 
-proc changeToCatalog def
-args  in
+proc changeToCatalog def nargs in
 . if "choice != 4" then
 . . ref choice 4 end
 endproc
 
-proc main def
-args  in
+obj optionsAvailable [0,1,2] end
+
+proc backToMain def
+args  in 
+. if "choice in optionsAvailable" then
+. . dump end
+. else do 
+. . ref choice 0 end
+
+proc main def nargs in
 . callproc hideCursor  end
 . callproc illwillInit fullscreen=true end
 . callproc setControlCHook exitProc end
 
 . during "true" do
 
-    // New terminal buffer
+    //New terminal buffer//
 . . obj tb callproc newTerminalBuffer terminalWidth(),terminalHeight() end
 
-    // Get keyboard input
+    //Get keyboard input//
 . . obj key callproc getKey  end
 
-    // Checking keyboard input
-. . op case hop op key end
-. . op of hop op Key.Escape,Key.Q: callproc exitProc  end
-. . op of hop op Key.Down: callproc incChoice  end
-. . op of hop op Key.Up: callproc decChoice  end
-. . op of hop op Key.Enter: callproc changeToCatalog  end
+    //Checking keyboard input//
+. . case key
+. . of Key.Q then callproc exitProc  end
+. . of Key.Escape then callproc backToMain  end
+. . of Key.Down then callproc incChoice  end
+. . of Key.Up then callproc decChoice  end
+. . of Key.Enter then callproc changeToCatalog  end
 . . else do
 . . . dump end
 
 . . if "choice == 0" then 
 . . . obj bb callproc newBoxBuffer tb.width,tb.height end
 
-      // Description box
+      //Description box//
 . . . # tb write(bb) end
 . . . # bb drawRect(27,12,47,1) end
 . . . # tb setBackgroundColor(bgWhite) end
@@ -66,11 +78,11 @@ args  in
 . . . # tb setForegroundColor(fgWhite) end
 . . . # tb setBackgroundColor(bgNone) end
 
-      // Main box
+      //Main box//
 . . . # bb drawRect(2,12,26,1) end
 . . . # tb write(bb) end
 
-      // Keybind display
+      //Keybind display//
 . . . # bb drawRect(2,13,26,12) end
 . . . # tb write(bb) end
 . . . # bb drawRect(2,13,26,14) end
@@ -78,7 +90,7 @@ args  in
 . . . # tb write(6,13,fgWhite," Use 🠕🠗 to Pick ") end
 . . . # tb write(6,14,fgWhite," Press Q to Quit ") end
 
-      // Menu content
+      //Menu content//
 . . . # tb write(3,4,fgWhite,"     []  Catalog       ") end
 . . . # tb write(3,5,fgWhite,"     []  Web Doc       ") end
 . . . # tb setBackgroundColor(bgWhite) end
@@ -86,7 +98,7 @@ args  in
 
 . . if "choice == 1" then 
 . . . obj bb callproc newBoxBuffer tb.width,tb.height end
-      // Description box
+      com "Description box"
 . . . # tb write(bb) end
 . . . # bb drawRect(27,12,47,1) end
 . . . # tb setBackgroundColor(bgWhite) end
@@ -96,11 +108,11 @@ args  in
 . . . # tb setForegroundColor(fgWhite) end
 . . . # tb setBackgroundColor(bgNone) end
 
-      // Main box
+      //Main box//
 . . . # bb drawRect(2,12,26,1) end
 . . . # tb write(bb) end
 
-      // Keybind display
+      //Keybind display//
 . . . # bb drawRect(2,13,26,12) end
 . . . # tb write(bb) end
 . . . # bb drawRect(2,13,26,14) end
@@ -108,7 +120,7 @@ args  in
 . . . # tb write(6,13,fgWhite," Use 🠕🠗 to Pick ") end
 . . . # tb write(6,14,fgWhite," Press Q to Quit ") end
 
-      // Menu content
+      //Menu content//
 . . . # tb write(3,5,fgWhite,"     []  Web Doc       ") end
 . . . # tb setBackgroundColor(bgWhite) end
 . . . # tb write(3,2,fgBlack,"      Vielin Docs      ") end
@@ -142,9 +154,11 @@ args  in
 . . . # tb write(3,5,fgBlack,"     [x] Web Doc       ") end
 
 . . if "choice == 4" then
-. . . # bb drawRect(2,12,26,1) end
+. . . obj bb callproc newBoxBuffer tb.width,tb.height end
+. . . # tb setForegroundColor(fgWhite) end
+. . . # tb write(bb) end
+. . . # bb drawRect(2,20,26,1) end
 . . . # tb write(bb) end 
-
 
 . . # tb display() end
 

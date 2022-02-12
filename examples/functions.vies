@@ -1,7 +1,5 @@
-proc main def
-args text:string in
-. push text end
+proc main def args text:string in
+	push text end
 endproc
 
 callproc main "Hello World" end
-

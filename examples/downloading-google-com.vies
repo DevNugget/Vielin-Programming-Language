@@ -1,4 +1,4 @@
 use std/httpclient end
-obj client callproc newHttpClient  end
+obj client ncallproc newHttpClient end
 push client.getContent("https://google.com") end
 callproc downloadFile client,"https://google.com","test.txt" end

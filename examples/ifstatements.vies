@@ -6,3 +6,6 @@ elif "my_num == 20" then
 . push "Number is 20" end
 else do
 . push "Number is not 10 and 20" end
+
+case my_num end
+of 10 do push "Number is 10" end
