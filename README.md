@@ -8,7 +8,7 @@ Vielin translates to Nim and then compiled.
 # Requirements
 - A C compiler (gcc or clang)
 - Nim
-- Python3 (only for Windows systems)
+- Python3
 
 # Running code
 Linux operating systems:  
