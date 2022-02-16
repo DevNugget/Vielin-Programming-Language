@@ -13,12 +13,12 @@ Vielin translates to Nim and then compiled.
 # Running code
 Linux operating systems:  
 ```
-python3 main.py {name-of-compiled-file: output is recommended} {compile-mode: com to compile normally, comr to compile and run and comd to retain compile notices}
+python3 linpile.py {name-of-compiled-file: output is recommended} {compile-mode: com to compile normally, comr to compile and run and comd to retain compile notices}
 ```
 
 Windows operating systems:  
 ```
-python main.py {filename} {name-of-compiled-file: output is recommended} {compile-mode: com to compile normally and comr to compile and run}
+python linpile.py {filename} {name-of-compiled-file: output is recommended} {compile-mode: com to compile normally and comr to compile and run}
 ```
 
 # How do I use Vielin?
