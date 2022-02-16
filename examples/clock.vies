@@ -1,0 +1,19 @@
+#param{ c }#endparam
+
+use times end
+use os end
+
+group CONST include
+	ref t ["⡎⢉⢵","⠀⢺⠀","⠊⠉⡱","⠊⣉⡱","⢀⠔⡇","⣏⣉⡉","⣎⣉⡁","⠊⢉⠝","⢎⣉⡱","⡎⠉⢱","⠀⠶⠀"] end
+	ref b ["⢗⣁⡸","⢀⣸⣀","⣔⣉⣀","⢄⣀⡸","⠉⠉⡏","⢄⣀⡸","⢇⣀⡸","⢰⠁⠀","⢇⣀⡸","⢈⣉⡹","⠀⠶ "] end
+
+during "true" do
+	per x ncallproc getClockStr end
+	. stdout write "\e[H\e[J" end
+	for "c in x" do
+		. stdout write t[c.ord hop op - hop op '0'.ord] end
+	push "" end
+	for "c in x" do 
+		. stdout write b[c.ord hop op - hop op '0'.ord] end
+	push "" end
+	nap 1000 end

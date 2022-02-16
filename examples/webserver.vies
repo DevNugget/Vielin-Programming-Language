@@ -1,0 +1,27 @@
+#param{ c }#endparam
+
+use asynchttpserver end
+use asyncdispatch end
+use parseutils end
+
+pull portInput stdin end
+op var hop op portUInt end
+dump callproc parseInt portInput,portUInt end
+
+obj totalRequests 0 end
+
+push "visit: http://localhost:",portInput end
+proc main def nargs pragma async in
+	obj server ncallproc newAsyncHttpServer end
+	proc cb def args req:Request pragma async in
+		+= totalRequests 1 end
+		obj totReqs $totalRequests end
+		per headers {"Date":"Tue, 29 Apr 2014 23:40:08 GMT","Content-type":"text/plain; charset=utf-8"} end
+		op await hop . req callproc respond Http200,"Hello World, This is a webserver made in Vielin\nRequests made: "&totReqs,headers.newHttpHeaders() end
+
+		op await hop . req callproc respond Http200,"Hi",headers.newHttpHeaders() end
+endproc
+	op await hop . server callproc serve Port(portUInt),cb end
+
+op asyncCheck hop ncallproc main end
+ncallproc runForever end

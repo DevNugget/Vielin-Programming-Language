@@ -1,0 +1,37 @@
+use macros end
+use os end
+use random end
+use ncurses end
+
+op when callproc defined Linux then
+	proc positional_putch def args x,y:int;ch:char in
+		callproc mvaddch x.cint,y.cint,ch.chtype end
+	proc updateScreen in
+		ncallproc refresh end
+	proc nonBlockingGetch -- char in
+		per c ncallproc getch end
+		op result hop op = hop if "c in 0..255: char(c) else: '\0'" end
+	proc closeScreen in
+		ncallproc endwin end
+else do
+	op error hop op "Not implemented" end
+
+group CONST include
+	ref W 80 end
+	ref H 40 end
+	ref Space 0 end
+	ref Food 1 end
+	ref Border 2 end
+	ref Symbol [' ','@','.'] end
+
+group TYPE include
+	op Dir hop pragma pure hop op = hop op enum hop op North,East,South,West end
+	ref Game object end
+		op board -- array[W*H,int] end
+		op head -- int end
+		op dir -- Dir end
+		op quit -- bool end
+
+
+
+

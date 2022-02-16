@@ -1,0 +1,12 @@
+#param{ c }#endparam
+
+for |i in 1..100| do
+	if |i mod 15 == 0| then
+		push "FizzBuzz" end
+	elif |i mod 3 == 0| then
+		push "Fizz" end
+	elif |i mod 5 == 0| then
+		push "Buzz" then
+	else do
+		push i end
+endloop
