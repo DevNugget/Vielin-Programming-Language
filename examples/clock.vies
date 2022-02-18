@@ -7,7 +7,7 @@ group CONST include
 	ref t ["⡎⢉⢵","⠀⢺⠀","⠊⠉⡱","⠊⣉⡱","⢀⠔⡇","⣏⣉⡉","⣎⣉⡁","⠊⢉⠝","⢎⣉⡱","⡎⠉⢱","⠀⠶⠀"] end
 	ref b ["⢗⣁⡸","⢀⣸⣀","⣔⣉⣀","⢄⣀⡸","⠉⠉⡏","⢄⣀⡸","⢇⣀⡸","⢰⠁⠀","⢇⣀⡸","⢈⣉⡹","⠀⠶ "] end
 
-during "true" do
+during |true| do
 	per x ncallproc getClockStr end
 	. stdout write "\e[H\e[J" end
 	for "c in x" do

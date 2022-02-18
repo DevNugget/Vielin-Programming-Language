@@ -1,20 +1,22 @@
+#param{ c }#endparam
+
 use macros end
 use os end
 use random end
 use ncurses end
 
-op when callproc defined Linux then
+when callproc defined Linux then
 	proc positional_putch def args x,y:int;ch:char in
 		callproc mvaddch x.cint,y.cint,ch.chtype end
 	proc updateScreen in
 		ncallproc refresh end
 	proc nonBlockingGetch -- char in
 		per c ncallproc getch end
-		op result hop op = hop if "c in 0..255: char(c) else: '\0'" end
+		ref result if |c in 0..255: char(c) else: '\0'| end
 	proc closeScreen in
 		ncallproc endwin end
 else do
-	op error hop op "Not implemented" end
+	make err "Not implemented yet" end
 
 group CONST include
 	ref W 80 end
@@ -31,6 +33,7 @@ group TYPE include
 		op head -- int end
 		op dir -- Dir end
 		op quit -- bool end
+
 
 
 

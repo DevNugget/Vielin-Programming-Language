@@ -66,6 +66,7 @@ ignores = [
 	"chop",
 	"callproc",
 	"ncallproc",
+        "if",
 	"#",
 	"as",
         "+",
@@ -138,6 +139,9 @@ for i in stack:
 	# End line and Create new line
 	elif i == "end":
 		output += "\n"
+
+	elif i == "when":
+                output += "when "
 
 	elif i == "group":
 		if stack[counter+1] == "VAR":
@@ -351,8 +355,11 @@ for i in stack:
 	elif i == "ref":
 		if stack[counter+2] not in ignores:
 			output += stack[counter+1] + " = " + stack[counter+2]
-		elif stack[counter+2] == "callproc":
+		else:
 			output += stack[counter+1] + " = "
+	elif i == "make":
+		if stack[counter+1] == "err":
+        		output += "error " + stack[counter+2]
 
 	# Super pop char
 	elif i == "chop":

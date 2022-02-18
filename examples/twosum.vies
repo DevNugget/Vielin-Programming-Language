@@ -5,9 +5,9 @@ per K 17 end
 
 proc twoSums hop op [I,] def
 args arr:array[I,int],K:int -- bool in
-	for "loc_1,i in" hop op arr.pairs do
-		for "loc_2,j in" hop op arr.pairs do
-			if "i + j == K and loc_1 != loc_2" then
+	for |loc_1,i in arr.pairs| do
+		for |loc_2,j in arr.pairs| do
+			if |i + j == K and loc_1 != loc_2| then
 				push i end
 				push j end
 				throw true end
