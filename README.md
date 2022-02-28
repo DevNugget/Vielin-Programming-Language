@@ -1,4 +1,4 @@
-![New Project (5)](https://user-images.githubusercontent.com/84568105/152688737-26756756-8e4d-4c38-8a15-e147196d0fca.png)
+![New Project(8)](https://user-images.githubusercontent.com/84568105/156002721-78e0d894-9e3d-4603-97a2-23be818624ed.png)
 
 # Vielin Programming Language
 Vielin is a transpiled programming language. A passion project, to try and make a set of syntax fun to use.  
